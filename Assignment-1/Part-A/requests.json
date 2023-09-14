@@ -1,0 +1,65 @@
+{
+  "api": "https://mainnet.infura.io/v3/af46804f91384731940b6271a0d6f7fe",
+  "requests": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_gasPrice",
+      "params": []
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_blockNumber",
+      "params": []
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_getBalance",
+      "params": [
+        "0xBaF6dC2E647aeb6F510f9e318856A1BCd66C5e19",
+        "latest"
+      ]
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_getTransactionByHash",
+      "params": [
+        "0xdcae4a84a5780f62f18a9afb07b3a7627b9a28aa128a76bfddec72de9a0c2606"
+      ]
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_getTransactionCount",
+      "params": [
+        "0xbaf6dc2e647aeb6f510f9e318856a1bcd66c5e19",
+        "0x1132aea"
+      ]
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "net_peerCount",
+      "params": []
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_getTransactionReceipt",
+      "params": [
+        "0x5d692282381c75786e5f700c297def496e8e54f0a96d5a4447035f75085933cb"
+      ]
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_getBlockTransactionCountByNumber",
+      "params": [
+        "0x1132aea"
+      ]
+    }
+  ]
+}
