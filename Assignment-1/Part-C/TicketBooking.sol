@@ -13,7 +13,7 @@ contract TicketBooking {
     uint public price;
     mapping(address => Buyer) BuyersPaid;
 
-    modifier onlyOwner() {
+    modifier onlySeller() {
         require(msg.sender == seller, "Only seller can call this function");
         _;
     }
@@ -21,6 +21,9 @@ contract TicketBooking {
         require(numTicketsSold < maxOccupancy, "All tickets have been sold");
         _;
     }
+
+    event Deposit(address from, uint amount);
+    event Refund(address to, uint amount);
 
     constructor(uint _maxOccupancy, uint _price) {
         seller = msg.sender;
@@ -33,27 +36,45 @@ contract TicketBooking {
         string memory emailId,
         uint numTickets
     ) public payable soldOut {
+        require(
+            numTicketsSold + numTickets <= maxOccupancy,
+            "Not enough tickets left"
+        );
+        uint totalPrice = numTickets * price;
+        require(msg.value >= totalPrice, "Not enough ether sent");
         /** Check if the buyer has already bought a ticket */
-
-        BuyersPaid[msg.sender].totalPrice = numTickets * price;
-        BuyersPaid[msg.sender].numTickets = numTickets;
-        BuyersPaid[msg.sender].email = emailId;
+        if (BuyersPaid[msg.sender].numTickets > 0) {
+            BuyersPaid[msg.sender].numTickets += numTickets;
+            BuyersPaid[msg.sender].totalPrice += totalPrice;
+        } else {
+            BuyersPaid[msg.sender].email = emailId;
+            BuyersPaid[msg.sender].numTickets = numTickets;
+            BuyersPaid[msg.sender].totalPrice = totalPrice;
+        }
         numTicketsSold += numTickets;
+        if (msg.value > totalPrice) {
+            payable(msg.sender).transfer(msg.value - totalPrice);
+        }
+        emit Deposit(msg.sender, totalPrice);
     }
 
-    function refundTicket(address buyer) public onlyOwner {
+    function refundTicket(address buyer) public onlySeller {
+        require(address(this).balance >= BuyersPaid[buyer].totalPrice, "Not enough balance");
         numTicketsSold -= BuyersPaid[buyer].numTickets;
-        BuyersPaid[buyer].numTickets = 0;
-        BuyersPaid[buyer].totalPrice = 0;
+        payable(buyer).transfer(BuyersPaid[buyer].totalPrice);
+        emit Refund(buyer, BuyersPaid[buyer].totalPrice);
+        delete BuyersPaid[buyer];
     }
 
-    function withdrawFunds() public onlyOwner {}
+    function withdrawFunds() public onlySeller {
+        payable(seller).transfer(address(this).balance);
+    }
 
-    function getBuyerAmountPaid(address buyer) public view returns (uint){
+    function getBuyerAmountPaid(address buyer) public view returns (uint) {
         return BuyersPaid[buyer].totalPrice;
     }
 
-    function kill() public onlyOwner{
-        
+    function kill() public onlySeller {
+        selfdestruct(payable(seller));
     }
 }

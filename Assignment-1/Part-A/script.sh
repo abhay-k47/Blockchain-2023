@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-sudo apt isntall jq curl
+sudo apt install jq curl >& /dev/null
 echo "{" > responses.json
 API=$(jq -c '.api' requests.json | sed "s/\"//g")
 counter=0
